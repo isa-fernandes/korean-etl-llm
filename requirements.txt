@@ -1,0 +1,37 @@
+# --- Download & scraping ---
+requests
+beautifulsoup4
+
+# --- PDF extraction ---
+pdfplumber
+
+# --- OCR (Korean) ---
+# GOT-OCR 2.0 (stepfun-ai/GOT-OCR2_0): VLM de 580M params, state-of-the-art para documentos.
+#   Modelo baixado automaticamente do HuggingFace (~1.5GB) na primeira execucao.
+#   Requer GPU CUDA (RTX 3050 6GB e suficiente).
+# Requer Poppler (para pdf2image no Windows):
+#   winget install oschwartz10612.poppler
+transformers==4.37.2
+accelerate
+tiktoken
+verovio
+pdf2image
+
+# --- Distributed processing (Medallion Silver) ---
+pyspark
+
+# --- Data analysis ---
+pandas
+langchain
+langchain_ollama
+json-repair
+
+# --- Visualization ---
+matplotlib
+seaborn
+
+# --- Notebooks ---
+jupyter
+
+# --- Local docs viewer ---
+markdown

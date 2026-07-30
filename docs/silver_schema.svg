@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Silver schema diagram</title>
+  <desc id="desc">Visual diagram for Silver dimensions and facts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12091f"/>
+      <stop offset="100%" stop-color="#211036"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#341f5b"/>
+      <stop offset="100%" stop-color="#24163d"/>
+    </linearGradient>
+    <linearGradient id="fact" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5b2676"/>
+      <stop offset="100%" stop-color="#34194c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#05020a" flood-opacity="0.45"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#bb86fc"/>
+    </marker>
+  </defs>
+  <rect width="1400" height="860" fill="url(#bg)" rx="28"/>
+  <text x="60" y="70" fill="#f4edff" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Camada Silver</text>
+  <text x="60" y="106" fill="#cdbcf3" font-size="18" font-family="Segoe UI, Arial, sans-serif">Dimensoes e fatos para rastreabilidade e analise</text>
+
+  <rect x="60" y="160" width="290" height="190" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="86" y="200" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimExam</text>
+  <text x="86" y="235" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK exam_id</text>
+  <text x="86" y="263" fill="#f4edff" font-size="16" font-family="Consolas, monospace">exam_name</text>
+  <text x="86" y="291" fill="#f4edff" font-size="16" font-family="Consolas, monospace">exam_edition / exam_number</text>
+  <text x="86" y="319" fill="#f4edff" font-size="16" font-family="Consolas, monospace">topik_level / exam_section</text>
+
+  <rect x="380" y="160" width="290" height="190" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="406" y="200" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimFile</text>
+  <text x="406" y="235" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK file_id</text>
+  <text x="406" y="263" fill="#f4edff" font-size="16" font-family="Consolas, monospace">filename / file_type</text>
+  <text x="406" y="291" fill="#f4edff" font-size="16" font-family="Consolas, monospace">size_kb / page_count</text>
+  <text x="406" y="319" fill="#f4edff" font-size="16" font-family="Consolas, monospace">source_pdf_path / source_url</text>
+
+  <rect x="700" y="140" width="320" height="260" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="726" y="180" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimQuestion</text>
+  <text x="726" y="215" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK question_id</text>
+  <text x="726" y="243" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK exam_id</text>
+  <text x="726" y="271" fill="#f4edff" font-size="16" font-family="Consolas, monospace">page_number / question_type</text>
+  <text x="726" y="299" fill="#f4edff" font-size="16" font-family="Consolas, monospace">raw_question_text</text>
+  <text x="726" y="327" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_vocabulary_items[]</text>
+  <text x="726" y="355" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_grammar_patterns[]</text>
+
+  <rect x="1060" y="160" width="280" height="220" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="1086" y="200" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimAnswer</text>
+  <text x="1086" y="235" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK answer_id</text>
+  <text x="1086" y="263" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK question_id</text>
+  <text x="1086" y="291" fill="#f4edff" font-size="16" font-family="Consolas, monospace">raw_answer_text / is_correct</text>
+  <text x="1086" y="319" fill="#f4edff" font-size="16" font-family="Consolas, monospace">answer_vocabulary_items[]</text>
+  <text x="1086" y="347" fill="#f4edff" font-size="16" font-family="Consolas, monospace">answer_grammar_patterns[]</text>
+
+  <rect x="240" y="500" width="350" height="190" rx="22" fill="url(#fact)" stroke="#d5b2ff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="268" y="540" fill="#f5d9ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">FatoDownload</text>
+  <text x="268" y="575" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK download_id</text>
+  <text x="268" y="603" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK exam_id / FK file_id</text>
+  <text x="268" y="631" fill="#f4edff" font-size="16" font-family="Consolas, monospace">download_date / download_status</text>
+  <text x="268" y="659" fill="#f4edff" font-size="16" font-family="Consolas, monospace">bronze_processed_at</text>
+  <text x="268" y="683" fill="#f4edff" font-size="16" font-family="Consolas, monospace">silver_processed_at</text>
+
+  <rect x="740" y="520" width="360" height="170" rx="22" fill="url(#fact)" stroke="#d5b2ff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="786" y="560" fill="#f5d9ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">FatoQA</text>
+  <text x="786" y="595" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK qa_id</text>
+  <text x="786" y="623" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK exam_id / question_id</text>
+  <text x="786" y="651" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK answer_id</text>
+
+  <path d="M350 190 C520 90, 650 90, 760 140" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1020 270 C1040 270, 1040 270, 1060 270" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M200 350 C200 460, 310 470, 370 500" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M520 350 C520 450, 470 470, 430 500" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M860 400 C860 460, 860 480, 860 520" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1200 380 C1200 470, 1060 480, 980 520" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+
+  <text x="60" y="790" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">A Silver organiza as entidades centrais do dominio e os fatos operacionais necessarios para rastreabilidade.</text>
+</svg>

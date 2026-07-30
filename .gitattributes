@@ -1,0 +1,14 @@
+# Normaliza quebras de linha para LF em arquivos de texto
+* text=auto
+
+# Trata notebooks como JSON para diffs mais limpos
+*.ipynb linguist-language=JSON diff=json
+
+# Marca arquivos gerados/binários para não aparecerem em diffs
+*.svg linguist-generated
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.mp3 binary
+*.parquet binary

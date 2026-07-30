@@ -1,0 +1,63 @@
+# Dados baixados / gerados — nunca versionar
+data/
+outputs/
+
+# Arquivos compactados e binários temporários
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Manter pastas vazias no git
+!**/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# VS Code / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Modelos e caches de ML baixados
+models/
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+*.bin
+.cache/
+~/.cache/
+
+# Testes e cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build / distribuição
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini

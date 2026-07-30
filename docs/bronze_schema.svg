@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="620" viewBox="0 0 1320 620" role="img" aria-labelledby="title desc">
+  <title id="title">Bronze schema diagram</title>
+  <desc id="desc">Visual diagram for the Bronze layer metadata structure.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12091f"/>
+      <stop offset="100%" stop-color="#211036"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#341f5b"/>
+      <stop offset="100%" stop-color="#24163d"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#05020a" flood-opacity="0.45"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#bb86fc"/>
+    </marker>
+  </defs>
+  <rect width="1320" height="620" fill="url(#bg)" rx="28"/>
+  <text x="60" y="70" fill="#f4edff" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Camada Bronze</text>
+  <text x="60" y="106" fill="#cdbcf3" font-size="18" font-family="Segoe UI, Arial, sans-serif">Primeiro dataset tabular gerado a partir da fonte bruta</text>
+
+  <rect x="70" y="160" width="330" height="250" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="100" y="205" fill="#e0c3ff" font-size="26" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Fonte de dados</text>
+  <text x="100" y="238" fill="#f4edff" font-size="17" font-family="Consolas, monospace">PDFs</text>
+  <text x="100" y="266" fill="#f4edff" font-size="17" font-family="Consolas, monospace">audios</text>
+  <text x="100" y="294" fill="#f4edff" font-size="17" font-family="Consolas, monospace">metadata.json</text>
+  <text x="100" y="334" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Etapa anterior a Bronze</text>
+  <text x="100" y="362" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">entrada do `src/extract.py`</text>
+
+  <rect x="490" y="145" width="360" height="280" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="520" y="190" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Bronze Parquet</text>
+  <text x="520" y="225" fill="#f4edff" font-size="17" font-family="Consolas, monospace">exam_id / exam_folder / exam_edition</text>
+  <text x="520" y="255" fill="#f4edff" font-size="17" font-family="Consolas, monospace">filename / label / source_pdf_path</text>
+  <text x="520" y="285" fill="#f4edff" font-size="17" font-family="Consolas, monospace">page_count / page_number</text>
+  <text x="520" y="315" fill="#f4edff" font-size="17" font-family="Consolas, monospace">word_count / char_count</text>
+  <text x="520" y="345" fill="#f4edff" font-size="17" font-family="Consolas, monospace">raw_text</text>
+  <text x="520" y="385" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Uma linha por pagina processada</text>
+
+  <rect x="930" y="160" width="300" height="220" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <text x="960" y="205" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Uso na Silver</text>
+  <text x="960" y="242" fill="#f4edff" font-size="17" font-family="Segoe UI, Arial, sans-serif">DimExam e DimFile</text>
+  <text x="960" y="270" fill="#f4edff" font-size="17" font-family="Segoe UI, Arial, sans-serif">base para extracao de questoes</text>
+  <text x="960" y="298" fill="#f4edff" font-size="17" font-family="Segoe UI, Arial, sans-serif">rastreabilidade operacional</text>
+  <text x="960" y="326" fill="#f4edff" font-size="17" font-family="Segoe UI, Arial, sans-serif">FatoDownload</text>
+
+  <path d="M400 270 C445 270, 455 270, 490 270" stroke="#bb86fc" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+  <path d="M850 270 C885 270, 895 270, 930 270" stroke="#bb86fc" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+
+  <text x="70" y="520" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">A Bronze e o primeiro dataset estruturado do pipeline: OCR por pagina mais metadados do exame e do arquivo.</text>
+</svg>
