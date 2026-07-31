@@ -13,10 +13,10 @@ from pdf2image import convert_from_path
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-from utils.parquet_io import write_parquet_data
 from schemas.bronze.pages_raw_schema import build_pages_raw_schema
 from utils.got_model import get_got_model
 from utils.hadoop_config import configure_windows_hadoop
+from utils.parquet_io import write_parquet_data
 from utils.spark_utils import initialize_spark
 from utils.text_utils import extract_exam_edition
 
@@ -139,23 +139,22 @@ def build_rows_for_exam_folder(
     return edition, rows
 
 
-def write_exam_parquet(
-    spark: SparkSession, schema: StructType, edition: str, rows: list[dict[str, Any]]
+def write_bronze_parquet(
+    spark: SparkSession, schema: StructType, rows: list[dict[str, Any]]
 ) -> None:
-    """Salva uma edição por vez em Parquet via Spark."""
+    """Salva todas as edições consolidadas em Parquet via Spark."""
     df = spark.createDataFrame(rows, schema=schema)
-    output_path = os.path.join(BRONZE_DIR, str(edition))
-    write_parquet_data(df, output_path)
+    write_parquet_data(df, BRONZE_DIR)
 
     part_files = [
         name
-        for name in os.listdir(output_path)
+        for name in os.listdir(BRONZE_DIR)
         if name.startswith("part-") and name.endswith(".parquet")
     ]
     if not part_files:
-        raise RuntimeError("Spark não gerou part file parquet para a edição.")
+        raise RuntimeError("Spark não gerou part file parquet para o bronze.")
 
-    print(f"  [OK] Parquet salvo ({edition}) via Spark: {os.path.abspath(output_path)}")
+    print(f"  [OK] Parquet bronze salvo via Spark: {os.path.abspath(BRONZE_DIR)}")
 
 
 def run_bronze_pipeline() -> None:
@@ -176,7 +175,7 @@ def run_bronze_pipeline() -> None:
     interrupted = False
     try:
         schema = build_pages_raw_schema()
-        total_rows = 0
+        all_rows: list[dict[str, Any]] = []
         processed_editions = 0
         failed_editions: list[str] = []
 
@@ -185,31 +184,32 @@ def run_bronze_pipeline() -> None:
             processed_at = datetime.now(timezone.utc).isoformat()
             print(f"\n[EDICAO] {folder_name}")
 
-            edition, rows = build_rows_for_exam_folder(folder, processed_at)
+            try:
+                edition, rows = build_rows_for_exam_folder(folder, processed_at)
+            except KeyboardInterrupt:
+                interrupted = True
+                print("\n[AVISO] Execução interrompida pelo usuário.")
+                break
+
             if not rows:
                 print("  [AVISO] Nenhum PDF válido encontrado nesta edição.")
                 continue
 
             edition_name = edition or folder_name
-            try:
-                write_exam_parquet(spark, schema, edition_name, rows)
-                processed_editions += 1
-                total_rows += len(rows)
-            except KeyboardInterrupt:
-                interrupted = True
-                print(
-                    "\n[AVISO] Execução interrompida pelo usuário. Progresso parcial foi mantido."
-                )
-                break
-            except Exception as exc:
-                failed_editions.append(edition_name)
-                print(f"  [ERRO] Falha ao salvar {edition_name}: {exc}")
+            all_rows.extend(rows)
+            processed_editions += 1
+            print(f"  [OK] {len(rows)} página(s) extraída(s) de {edition_name}.")
 
         if processed_editions == 0:
-            print("[AVISO] Nenhuma edição gerou Parquet.")
+            print("[AVISO] Nenhuma edição gerou dados.")
         else:
-            print(f"[OK] {processed_editions} edição(ões) salva(s) em Parquet.")
-            print(f"[OK] {total_rows} registro(s) escritos no total.")
+            try:
+                write_bronze_parquet(spark, schema, all_rows)
+                print(f"[OK] {processed_editions} edição(ões) salva(s) em Parquet.")
+                print(f"[OK] {len(all_rows)} registro(s) escritos no total.")
+            except Exception as exc:
+                print(f"  [ERRO] Falha ao salvar bronze: {exc}")
+
         if failed_editions:
             print(f"[AVISO] Edições com falha: {', '.join(failed_editions)}")
         if interrupted:

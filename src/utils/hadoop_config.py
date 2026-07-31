@@ -19,7 +19,9 @@ def configure_windows_hadoop() -> None:
 
     os.environ["HADOOP_HOME"] = hadoop_home
     os.environ["hadoop.home.dir"] = hadoop_home
-    os.environ["PATH"] = os.path.join(hadoop_home, "bin") + os.pathsep + os.environ.get("PATH", "")
+    os.environ["PATH"] = (
+        os.path.join(hadoop_home, "bin") + os.pathsep + os.environ.get("PATH", "")
+    )
 
     # Em Windows, garante que driver/executor usem o mesmo Python do ambiente ativo.
     os.environ["PYSPARK_PYTHON"] = sys.executable

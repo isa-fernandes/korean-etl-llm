@@ -1,15 +1,13 @@
-import json
 import logging
 import re
 import time
+from typing import Literal, Optional
 
 import json_repair
-
-from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
 
 logger = logging.getLogger(__name__)
 
@@ -18,29 +16,61 @@ logger = logging.getLogger(__name__)
 # Data models
 # ---------------------------------------------------------------------------
 
+
 class AnswerObject(BaseModel):
     answer_text: str = Field(description="the full answer")
-    answer_vocabulary_items: list[str] = Field(description="list of key Korean vocabulary that is only found in the answer text, return empty if answer text does not contain relevant vocabulary")
-    answer_grammar_patterns: list[str] = Field(description="list of grammar structures that is only found in the answer text, return empty if answer text does not contain relevant grammar")
+    answer_vocabulary_items: list[str] = Field(
+        description="list of key Korean vocabulary that is only found in the answer text, return empty if answer text does not contain relevant vocabulary"
+    )
+    answer_grammar_patterns: list[str] = Field(
+        description="list of grammar structures that is only found in the answer text, return empty if answer text does not contain relevant grammar"
+    )
 
 
 class QuestionObject(BaseModel):
     question_text: str = Field(description="the full question")
-    question_stimulus: Optional[str] = Field(default=None, description="a single text or stimulus applies to two or more consecutive questions.")
+    question_stimulus: Optional[str] = Field(
+        default=None,
+        description="a single text or stimulus applies to two or more consecutive questions.",
+    )
     answer_options: list[AnswerObject] = Field(description="list of choices")
-    question_type: Optional[Literal["vocabulary", "grammar", "reading comprehension","image dependent"]] = Field(default=None, description="the type of question, can be vocabulary, grammar, reading comprehension, etc")
-    question_vocabulary_items: list[str] = Field(description="list of key Korean words in problem statement")
-    question_grammar_patterns: list[str] = Field(description="list of grammar structures in problem statement")
-    topic: Optional[str] = Field(default=None, max_length=30, description="thematic context")
-    difficulty_level: Optional[Literal["easy", "medium", "hard"]] = Field(default=None, description="the classification of the question between easy, medium, and hard")
-    confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="0 to 1 score of how complete and well-formed this question is")
+    question_type: Optional[
+        Literal["vocabulary", "grammar", "reading comprehension", "image dependent"]
+    ] = Field(
+        default=None,
+        description="the type of question, can be vocabulary, grammar, reading comprehension, etc",
+    )
+    question_vocabulary_items: list[str] = Field(
+        description="list of key Korean words in problem statement"
+    )
+    question_grammar_patterns: list[str] = Field(
+        description="list of grammar structures in problem statement"
+    )
+    topic: Optional[str] = Field(
+        default=None, max_length=30, description="thematic context"
+    )
+    difficulty_level: Optional[Literal["easy", "medium", "hard"]] = Field(
+        default=None,
+        description="the classification of the question between easy, medium, and hard",
+    )
+    confidence: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="0 to 1 score of how complete and well-formed this question is",
+    )
+
 
 class WrapperQuestions(BaseModel):
-    questions: list[QuestionObject] = Field(description="list of questions extracted from PDF")
+    questions: list[QuestionObject] = Field(
+        description="list of questions extracted from PDF"
+    )
+
 
 # ---------------------------------------------------------------------------
 # Validation
 # ---------------------------------------------------------------------------
+
 
 def _korean_ratio(text: str) -> float:
     """Fraction of non-whitespace characters that are Hangul syllables.
@@ -49,7 +79,7 @@ def _korean_ratio(text: str) -> float:
     questions (e.g. "붉게 (        )") are not penalised by the blank spaces.
     """
     non_space = [c for c in text if not c.isspace()]
-    korean = sum(1 for c in non_space if '\uAC00' <= c <= '\uD7A3')
+    korean = sum(1 for c in non_space if "\uac00" <= c <= "\ud7a3")
     return korean / max(len(non_space), 1)
 
 
@@ -83,6 +113,7 @@ def filter_reliable(
 ) -> list[QuestionObject]:
     """Return only the questions from *wrapper* that pass :func:`is_reliable`."""
     return [q for q in wrapper.questions if is_reliable(q, min_confidence)]
+
 
 # ---------------------------------------------------------------------------
 # Prompt
@@ -392,7 +423,7 @@ def _fix_raw(text: str) -> str:
     Removes invalid \\uXXXX escape sequences whose suffix is not 4 hex
     digits, which cause both json.loads and json_repair to hard-fail.
     """
-    return re.sub(r'\\u(?![0-9a-fA-F]{4})', '', text)
+    return re.sub(r"\\u(?![0-9a-fA-F]{4})", "", text)
 
 
 def _extract_questions(obj: object) -> list | None:
@@ -437,7 +468,7 @@ def _repair_and_parse(raw: str) -> WrapperQuestions:
 
     # 2. Extract the first {...} block in case the model added prose, then
     #    pre-process to remove invalid unicode escapes before repair.
-    match = re.search(r'\{.*\}', raw, re.DOTALL)
+    match = re.search(r"\{.*\}", raw, re.DOTALL)
     if not match:
         raise ValueError("No JSON object found in LLM output")
 
@@ -449,7 +480,9 @@ def _repair_and_parse(raw: str) -> WrapperQuestions:
         raise ValueError(f"Could not repair JSON in LLM output: {exc}") from exc
 
     if not isinstance(obj, dict):
-        raise ValueError(f"Expected a JSON object from repair, got {type(obj).__name__}")
+        raise ValueError(
+            f"Expected a JSON object from repair, got {type(obj).__name__}"
+        )
 
     # 3. Normalize keys (strip accidental leading/trailing whitespace)
     obj = _clean_json_keys(obj)
@@ -481,6 +514,7 @@ def build_chain(model_name: str = "qwen2.5:7b") -> object:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def extract_questions(
     text: str,
@@ -520,9 +554,7 @@ def extract_questions(
             return result
         except Exception as exc:
             last_error = exc
-            logger.warning(
-                "Attempt %d/%d failed: %s", attempt, max_retries, exc
-            )
+            logger.warning("Attempt %d/%d failed: %s", attempt, max_retries, exc)
             if attempt < max_retries:
                 time.sleep(retry_delay)
 
@@ -548,6 +580,7 @@ if __name__ == "__main__":
         3. 생활 예절 
         4. 환경 보호 
     """
-    result = extract_questions(_SAMPLE,model_name="joonoh/HyperCLOVAX-SEED-Text-Instruct-1.5B")
+    result = extract_questions(
+        _SAMPLE, model_name="joonoh/HyperCLOVAX-SEED-Text-Instruct-1.5B"
+    )
     print(result)
-

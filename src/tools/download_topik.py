@@ -29,7 +29,9 @@ from bs4 import BeautifulSoup
 INDEX_URL = "https://www.topikguide.com/previous-papers/"
 
 # Pasta raiz onde os arquivos serão salvos (camada Bronze)
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "bronze", "topik_papers")
+OUTPUT_DIR = os.path.join(
+    os.path.dirname(__file__), "..", "data", "bronze", "topik_papers"
+)
 
 # Pausa entre requisições para não sobrecarregar o servidor (segundos)
 DELAY = 1.5
@@ -39,8 +41,18 @@ DOWNLOAD_EXTENSIONS = (".pdf", ".mp3")
 
 # Nomes dos meses em inglês (como aparecem nas páginas do site)
 MONTH_NAMES = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december",
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
 ]
 
 # Cabeçalho para simular um navegador comum
@@ -53,6 +65,7 @@ HEADERS = {
 }
 
 # ─── Funções ────────────────────────────────────────────────────────────────────
+
 
 def get_page(url: str) -> BeautifulSoup | None:
     """Faz GET em uma URL e retorna o objeto BeautifulSoup, ou None em erro."""
@@ -173,6 +186,7 @@ def parse_file_metadata(label: str) -> dict:
 
 # ─── Funções de scraping ────────────────────────────────────────────────────────
 
+
 def get_paper_page_links(index_url: str) -> list[dict]:
     """
     Extrai da página de índice os links para cada página de prova individual,
@@ -255,19 +269,21 @@ def get_file_links(page_url: str) -> list[dict]:
 
         meta = parse_file_metadata(label)
 
-        file_entries.append({
-            "filename":    filename,
-            "label":       label,
-            "exam_number": exam_number,
-            "exam_year":   exam_year,
-            "exam_month":  exam_month,
-            "exam_session": exam_session,
-            "level":       meta["level"],
-            "section":     meta["section"],
-            "file_type":   meta["file_type"],
-            "source_url":  full_url,
-            "page_url":    page_url,
-        })
+        file_entries.append(
+            {
+                "filename": filename,
+                "label": label,
+                "exam_number": exam_number,
+                "exam_year": exam_year,
+                "exam_month": exam_month,
+                "exam_session": exam_session,
+                "level": meta["level"],
+                "section": meta["section"],
+                "file_type": meta["file_type"],
+                "source_url": full_url,
+                "page_url": page_url,
+            }
+        )
 
     return file_entries
 
@@ -303,6 +319,7 @@ def download_file(url: str, dest_folder: str) -> dict:
 
 
 # ─── Execução principal ──────────────────────────────────────────────────────────
+
 
 def main():
     print("=" * 60)
@@ -347,23 +364,25 @@ def main():
             result = download_file(entry["source_url"], dest_folder)
             total_files += 1
 
-            exam_records.append({
-                "filename":        entry["filename"],
-                "label":           entry["label"],
-                "exam_number":     entry["exam_number"],
-                "exam_year":       entry["exam_year"],
-                "exam_month":      entry["exam_month"],
-                "exam_session":    entry["exam_session"],
-                "topik_format":    paper_format,          # "New Format" ou "Old Format"
-                "level":           entry["level"],
-                "section":         entry["section"],
-                "file_type":       entry["file_type"],
-                "source_url":      entry["source_url"],
-                "page_url":        entry["page_url"],
-                "download_date":   str(date.today()),
-                "size_kb":         result["size_kb"],
-                "download_status": result["status"],
-            })
+            exam_records.append(
+                {
+                    "filename": entry["filename"],
+                    "label": entry["label"],
+                    "exam_number": entry["exam_number"],
+                    "exam_year": entry["exam_year"],
+                    "exam_month": entry["exam_month"],
+                    "exam_session": entry["exam_session"],
+                    "topik_format": paper_format,  # "New Format" ou "Old Format"
+                    "level": entry["level"],
+                    "section": entry["section"],
+                    "file_type": entry["file_type"],
+                    "source_url": entry["source_url"],
+                    "page_url": entry["page_url"],
+                    "download_date": str(date.today()),
+                    "size_kb": result["size_kb"],
+                    "download_status": result["status"],
+                }
+            )
 
         # Passo 5: Salva metadata.json dentro da pasta de cada prova
         os.makedirs(dest_folder, exist_ok=True)

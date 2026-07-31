@@ -16,7 +16,7 @@ Hoje, a Bronze e gravada em Parquet, com um dataset por edicao do exame e uma li
 
 | Estrutura | Granularidade | Formato | Papel |
 | --- | --- | --- | --- |
-| dataset Bronze por edicao | Uma linha por pagina extraida | Parquet | Preservar OCR, metadados do arquivo e contexto do exame |
+| dataset Bronze consolidado | Uma linha por pagina extraida | Parquet | Preservar OCR, metadados do arquivo e contexto do exame |
 
 ## Dataset principal
 
@@ -26,7 +26,7 @@ Cada dataset Parquet representa uma edicao de exame processada pela Bronze.
 
 Localizacao esperada:
 
-- `data/bronze/<edition>`
+- `data/bronze/`
 
 Formato:
 
@@ -106,7 +106,7 @@ Em outras palavras, a Bronze funciona como o primeiro produto tabular confiavel 
 | Camada | Persistencia atual | Unidade logica | Observacao |
 | --- | --- | --- | --- |
 | Fonte | `data/topik_papers/<edition>` | PDFs, audios e metadata.json | Material bruto anterior a Bronze |
-| Bronze | `data/bronze/<edition>` | Uma linha por pagina processada | Dataset Parquet gerado por `src/extract.py` |
+| Bronze | `data/bronze/` | Uma linha por pagina processada | Dataset Parquet gerado por `src/extract.py` |
 
 ## Relacao com a camada Silver
 

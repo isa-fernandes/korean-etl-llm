@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import logging
 import os
 
@@ -10,22 +9,21 @@ from pyspark.sql import SparkSession
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, concat_ws, sha2
 
-
-from utils.parquet_io import read_parquet_by_edition, write_parquet_data
 from schemas.bronze.pages_raw_schema import build_pages_raw_schema
-from text_cleaner import preprocess_raw_text
 from tools.langchain_functions.generative_api import (
     QuestionObject,
     extract_questions,
     filter_reliable,
 )
+from tools.text_cleaner import preprocess_raw_text
+from transformations.silver.dim_answer import create_dim_answer
 from transformations.silver.dim_exam import create_dim_exam
 from transformations.silver.dim_file import create_dim_file
 from transformations.silver.dim_question import create_dim_question
-from transformations.silver.dim_answer import create_dim_answer
 from transformations.silver.fact_download import create_fact_download
 from transformations.silver.fact_qa import create_fact_qa
 from utils.hadoop_config import configure_windows_hadoop
+from utils.parquet_io import read_parquet_data, write_parquet_data
 from utils.spark_utils import initialize_spark
 from utils.text_utils import concat_ws_sha256
 
@@ -33,14 +31,13 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(messag
 logger = logging.getLogger(__name__)
 
 BRONZE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "bronze")
-SILVER_BY_EXAM_DIR = os.path.join(
+SILVER_DIR = os.path.join(
     os.path.dirname(__file__),
     "..",
     "..",
     "data",
     "silver",
     "topik_documents",
-    "by_exam",
 )
 
 
@@ -109,10 +106,8 @@ def write_silver_parquet(
     dim_answer_df: DataFrame,
     fact_download_df: DataFrame,
     fact_qa_df: DataFrame,
-    exam: str,
 ) -> None:
     """Persiste os dataframes na camada Silver como Parquet."""
-    os.makedirs(SILVER_BY_EXAM_DIR, exist_ok=True)
 
     dfs = {
         "dim_exam": dim_exam_df,
@@ -125,7 +120,7 @@ def write_silver_parquet(
     values_count = {}
 
     for name, df in dfs.items():
-        df_path = os.path.join(SILVER_BY_EXAM_DIR, str(exam), name)
+        df_path = os.path.join(SILVER_DIR, name)
         df.cache()
         values_count[df_path] = df.count()
         write_parquet_data(df, df_path)
@@ -142,32 +137,12 @@ def write_silver_parquet(
     )
 
 
-def parse_exam_arg() -> str:
-    """Valida e retorna o exame informado via CLI."""
-    options = [
-        f for f in os.listdir(BRONZE_DIR) if os.path.isdir(os.path.join(BRONZE_DIR, f))
-    ]
-
-    parser = argparse.ArgumentParser(
-        description="Lê arquivos Parquet de um exame TOPIK."
-    )
-    parser.add_argument(
-        "exam",
-        choices=options,
-        metavar="EXAM",
-        help=f"Edição do exame. Opções: {options}",
-    )
-    args = parser.parse_args()
-    return args.exam
-
-
 def extract_questions_from_bronze(
     spark: SparkSession,
-    exam: str,
 ) -> tuple[list[dict], list[dict], list[QuestionObject]]:
-    """Lê a bronze, extrai e limpa questões e respostas por página."""
+    """Lê o bronze consolidado, extrai e limpa questões e respostas por página."""
     bronze_schema = build_pages_raw_schema()
-    df = read_parquet_by_edition(spark, BRONZE_DIR, exam, bronze_schema)
+    df = read_parquet_data(spark, BRONZE_DIR, bronze_schema)
 
     logger.info("Pré-processando e extraindo questões por página...")
     df = (
@@ -265,26 +240,26 @@ def build_answer_row(
     }
 
 
-def run_silver_pipeline(exam: str | None = None) -> None:
-    """Executa o pipeline completo da camada Silver para uma edição."""
-    if exam is None:
-        exam = parse_exam_arg()
-
+def run_silver_pipeline() -> None:
+    """Executa o pipeline completo da camada Silver para todos os exames."""
     configure_windows_hadoop()
     spark = None
 
     try:
         spark = initialize_spark("topik-silver-builder")
+
         questions_list, answers_list, reliable_questions = (
-            extract_questions_from_bronze(spark, exam)
+            extract_questions_from_bronze(spark)
         )
 
         if not questions_list:
-            logger.warning("Nenhuma questão confiável extraída para %s.", exam)
+            logger.warning("Nenhuma questão confiável extraída.")
             return
 
+        logger.info("Questões confiáveis extraídas: %d", len(reliable_questions))
+
         bronze_schema = build_pages_raw_schema()
-        df = read_parquet_by_edition(spark, BRONZE_DIR, exam, bronze_schema)
+        full_bronze_df = read_parquet_data(spark, BRONZE_DIR, bronze_schema)
 
         (
             dim_exam_df,
@@ -293,10 +268,7 @@ def run_silver_pipeline(exam: str | None = None) -> None:
             dim_answer_df,
             fact_download_df,
             fact_qa_df,
-        ) = build_silver_tables(spark, df, questions_list, answers_list)
-
-        total = len(reliable_questions)
-        logger.info("Questões confiáveis extraídas: %d", total)
+        ) = build_silver_tables(spark, full_bronze_df, questions_list, answers_list)
 
         write_silver_parquet(
             dim_exam_df,
@@ -305,7 +277,6 @@ def run_silver_pipeline(exam: str | None = None) -> None:
             dim_answer_df,
             fact_download_df,
             fact_qa_df,
-            exam,
         )
     finally:
         if spark is not None:
@@ -313,8 +284,7 @@ def run_silver_pipeline(exam: str | None = None) -> None:
 
 
 def main() -> None:
-    exam = parse_exam_arg()
-    run_silver_pipeline(exam)
+    run_silver_pipeline()
 
 
 if __name__ == "__main__":

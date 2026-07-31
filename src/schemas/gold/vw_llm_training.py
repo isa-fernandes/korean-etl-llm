@@ -1,4 +1,4 @@
-from pyspark.sql.types import StructField, StringType, FloatType, ArrayType, StructType
+from pyspark.sql.types import ArrayType, FloatType, StringType, StructField, StructType
 
 
 def build_vw_llm_training_schema():
@@ -20,11 +20,11 @@ def build_vw_llm_training_schema():
                 ),
                 True,
             ),
-            StructField("topik_level",StringType(), True),
+            StructField("topik_level", StringType(), True),
             StructField("topic", StringType(), True),
             StructField("difficulty_level", StringType(), True),
             StructField("question_type", StringType(), True),
-            StructField("confidence", FloatType(), True)
+            StructField("confidence", FloatType(), True),
             # TODO: adicionar vocabulários/gramáticas
         ]
     )

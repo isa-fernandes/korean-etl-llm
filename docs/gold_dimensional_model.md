@@ -92,7 +92,7 @@ Observacoes de implementacao:
 
 As tabelas da Gold dependem diretamente das entidades descritas na Silver:
 
-- `vw_llm_training` combina `DimExam`, `DimQuestion` e `DimAnswer` via `fact_qa`, consolida as alternativas por questao e monta o campo `messages` inteiramente em Spark.
+- `vw_llm_training` combina `DimExam`, `DimQuestion` e `DimAnswer` diretamente, consolida as alternativas por questao e monta o campo `messages` inteiramente em Spark.
 - `GoldExamStats` resume os dados de questoes e respostas por exame.
 
 Em termos praticos, a Silver organiza o dado em nivel de entidade. A Gold reorganiza esse mesmo conteudo em nivel de consumo analitico.
@@ -101,7 +101,7 @@ Em termos praticos, a Silver organiza o dado em nivel de entidade. A Gold reorga
 
 Esse modelo funciona bem com uma abordagem orientada a DataFrames:
 
-- `vw_llm_training` e construida com joins entre `fact_qa`, `dim_question`, `dim_answer` e `dim_exam`, seguidos de `collect_list` para agregar alternativas por questao, montagem do texto do `assistant` via `concat_ws`, e construcao do array `messages` com `array(struct(...))`. O schema resultante e raso (apenas um nivel de aninhamento no `messages`), o que minimiza o overhead de serializacao Arrow no `Dataset.from_spark()`.
+- `vw_llm_training` e construida com joins entre `dim_question`, `dim_answer` e `dim_exam`, seguidos de `pivot` para agregar alternativas por questao, montagem do texto do `assistant` via `concat`, e construcao do array `messages` com `array(struct(...))`. O schema resultante e raso (apenas um nivel de aninhamento no `messages`), o que minimiza o overhead de serializacao Arrow no `Dataset.from_spark()`.
 - `GoldExamStats` pode ser construida com agregacoes por `exam_id`, contagens, medias e colecoes estruturadas para distribuicoes.
 - Campos de distribuicao podem ser modelados como mapas ou structs, em vez de texto plano.
 

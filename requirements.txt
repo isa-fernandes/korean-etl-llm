@@ -1,9 +1,9 @@
 # --- Download & scraping ---
-requests
-beautifulsoup4
+requests==2.33.1
+beautifulsoup4==4.14.3
 
 # --- PDF extraction ---
-pdfplumber
+pdfplumber==0.11.9
 
 # --- OCR (Korean) ---
 # GOT-OCR 2.0 (stepfun-ai/GOT-OCR2_0): VLM de 580M params, state-of-the-art para documentos.
@@ -12,26 +12,26 @@ pdfplumber
 # Requer Poppler (para pdf2image no Windows):
 #   winget install oschwartz10612.poppler
 transformers==4.37.2
-accelerate
-tiktoken
-verovio
-pdf2image
+accelerate==1.14.0
+tiktoken==0.13.0
+verovio==6.2.1
+pdf2image==1.17.0
 
 # --- Distributed processing (Medallion Silver) ---
-pyspark
+pyspark==4.1.1
 
 # --- Data analysis ---
-pandas
-langchain
-langchain_ollama
-json-repair
+pandas==3.0.2
+langchain==1.3.11
+langchain-ollama==1.1.0
+json-repair==0.61.7
 
 # --- Visualization ---
-matplotlib
-seaborn
+matplotlib==3.10.9
+seaborn==0.13.2
 
 # --- Notebooks ---
-jupyter
+jupyter==1.1.1
 
 # --- Local docs viewer ---
-markdown
+Markdown==3.10.2

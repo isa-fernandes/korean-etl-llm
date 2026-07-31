@@ -37,17 +37,6 @@ def read_parquet_data(
     return reader.parquet(path)
 
 
-def read_parquet_by_edition(
-    spark: SparkSession,
-    base_dir: str,
-    edition: str,
-    schema: StructType | None = None,
-) -> DataFrame:
-    """Lê Parquet de uma edição específica dentro de uma base de dados."""
-    edition_path = os.path.join(base_dir, str(edition))
-    return read_parquet_data(spark, edition_path, schema)
-
-
 def write_parquet_data(
     df: DataFrame,
     path: str,

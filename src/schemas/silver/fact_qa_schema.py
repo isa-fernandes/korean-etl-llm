@@ -1,4 +1,4 @@
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.types import StringType, StructField, StructType
 
 
 def build_fact_qa_schema() -> StructType:

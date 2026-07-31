@@ -58,11 +58,11 @@ O script faz scraping do site [topikguide.com/previous-papers](https://www.topik
 # Bronze: OCR dos PDFs
 python src/cli/run_pipeline.py bronze
 
-# Silver: gera tabelas dimensionais para uma edição
-python src/cli/run_pipeline.py silver --exam 102nd
+# Silver: gera tabelas dimensionais para todos os exames
+python src/cli/run_pipeline.py silver
 
-# Gold: gera datasets analíticos para uma edição
-python src/cli/run_pipeline.py gold --exam 102nd
+# Gold: gera datasets analíticos a partir de toda a Silver
+python src/cli/run_pipeline.py gold
 ```
 
 ### 3. Visualizar a documentação local
@@ -108,10 +108,11 @@ A documentação da modelagem dimensional é servida em `http://127.0.0.1:8000`.
 - [x] Pipeline Bronze com OCR via GOT-OCR 2.0
 - [x] Pipeline Silver com tabelas dimensionais
 - [x] Extração estruturada de questões via LLM local
-- [x] Testes unitários para limpeza de texto e API generativa
+- [ ] Testes unitários para limpeza de texto e API generativa
 - [ ] Pipeline Gold completo (`vw_llm_training` e `mart_exam_stats` em desenvolvimento)
+- [ ] Finetunning de modelo LLM para gerar questões de prova a partir da `vw_llm_training` (em desenvolvimento)
+- [ ] Criação de ambiente docker
 
-Veja os arquivos `TODO` em `src/pipelines/gold_pipeline.py` e `src/transformations/gold/`.
 
 ---
 

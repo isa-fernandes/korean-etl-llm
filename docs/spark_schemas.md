@@ -78,7 +78,7 @@ Gold (datasets analíticos)
 | Camada | Fonte ou destino principal | Formato | Finalidade |
 | --- | --- | --- | --- |
 | Fonte | `data/topik_papers/<edition>` | PDFs, audios e JSON | Material bruto de entrada |
-| Bronze | `data/bronze/<edition>` | Parquet | Estruturar o texto extraido por pagina com rastreabilidade |
+| Bronze | `data/bronze/` | Parquet | Estruturar o texto extraido por pagina com rastreabilidade |
 | Silver | datasets por entidade ou fato | Parquet | Estruturar o dado para joins e enriquecimento |
 | Gold | datasets analiticos finais | Parquet | Entregar consumo analitico e treino |
 

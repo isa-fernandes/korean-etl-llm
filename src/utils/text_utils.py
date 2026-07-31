@@ -1,6 +1,7 @@
-import re 
-from typing import Any
 import hashlib
+import re
+from typing import Any
+
 
 def extract_exam_edition(record: dict[str, Any]) -> str | None:
     """Deriva a edicao da prova (ex.: 102nd) a partir de campos disponiveis."""
@@ -20,9 +21,10 @@ def extract_exam_edition(record: dict[str, Any]) -> str | None:
 
     return None
 
+
 def concat_ws_sha256(separador, lista_valores):
     # 1. Replica o comportamento do concat_ws (ignora None e converte para str)
     texto_junto = separador.join(str(x) for x in lista_valores if x is not None)
-    
+
     # 2. Gera o SHA-256 idêntico ao Spark
-    return hashlib.sha256(texto_junto.encode('utf-8')).hexdigest()
+    return hashlib.sha256(texto_junto.encode("utf-8")).hexdigest()

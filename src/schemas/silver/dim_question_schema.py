@@ -1,10 +1,10 @@
 from pyspark.sql.types import (
-    StructType,
-    StructField,
-    StringType,
-    IntegerType,
     ArrayType,
-    FloatType
+    FloatType,
+    IntegerType,
+    StringType,
+    StructField,
+    StructType,
 )
 
 
@@ -12,7 +12,9 @@ def build_dim_question_schema() -> StructType:
     """Schema explicito para manter consistencia do dataset Silver."""
     return StructType(
         [
-            StructField("question_id", StringType(), False), # exam_id || page_number || raw_question_text || question_stimulus
+            StructField(
+                "question_id", StringType(), False
+            ),  # exam_id || page_number || raw_question_text || question_stimulus
             StructField("exam_id", StringType(), False),
             StructField("page_number", IntegerType(), True),
             StructField("question_type", StringType(), True),
@@ -22,6 +24,6 @@ def build_dim_question_schema() -> StructType:
             StructField("question_grammar_patterns", ArrayType(StringType()), True),
             StructField("topic", StringType(), True),
             StructField("difficulty_level", StringType(), True),
-            StructField("confidence", FloatType(), True)
+            StructField("confidence", FloatType(), True),
         ]
     )
