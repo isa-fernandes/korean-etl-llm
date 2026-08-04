@@ -179,7 +179,7 @@ def extract_questions_from_bronze(
                 clean_text, model_name="joonoh/HyperCLOVAX-SEED-Text-Instruct-1.5B"
             )
             all_questions.extend(wrapper.questions)
-            page_reliable_questions = filter_reliable(wrapper)
+            page_reliable_questions = filter_reliable(wrapper, min_confidence=0.3)
             reliable_questions.extend(page_reliable_questions)
 
             for question in page_reliable_questions:

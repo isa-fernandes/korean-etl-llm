@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="620" viewBox="0 0 1280 620" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
   <title id="title">Gold schema diagram</title>
-  <desc id="desc">Visual diagram for Gold analytical datasets.</desc>
+  <desc id="desc">Visual diagram for Gold analytical datasets: vw_llm_training and mart_exam_stats.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#12091f"/>
@@ -17,31 +17,34 @@
       <path d="M0,0 L12,6 L0,12 Z" fill="#bb86fc"/>
     </marker>
   </defs>
-  <rect width="1280" height="620" fill="url(#bg)" rx="28"/>
+  <rect width="1400" height="760" fill="url(#bg)" rx="28"/>
   <text x="60" y="70" fill="#f4edff" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Camada Gold</text>
-  <text x="60" y="106" fill="#cdbcf3" font-size="18" font-family="Segoe UI, Arial, sans-serif">Datasets analiticos para treino e estatistica</text>
+  <text x="60" y="106" fill="#cdbcf3" font-size="18" font-family="Segoe UI, Arial, sans-serif">Datasets analiticos para treino de LLM e estatisticas por exame</text>
 
-  <rect x="90" y="170" width="500" height="290" rx="24" fill="url(#card)" stroke="#d5b2ff" stroke-opacity="0.36" filter="url(#shadow)"/>
-  <text x="124" y="214" fill="#f5d9ff" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700">GoldLLMTraining</text>
-  <text x="124" y="252" fill="#f4edff" font-size="17" font-family="Consolas, monospace">PK training_id</text>
-  <text x="124" y="282" fill="#f4edff" font-size="17" font-family="Consolas, monospace">FK exam_id / question_id / answer_id</text>
-  <text x="124" y="312" fill="#f4edff" font-size="17" font-family="Consolas, monospace">question_text_clean / answer_text_clean</text>
-  <text x="124" y="342" fill="#f4edff" font-size="17" font-family="Consolas, monospace">question_vocabulary_items[]</text>
-  <text x="124" y="372" fill="#f4edff" font-size="17" font-family="Consolas, monospace">question_grammar_patterns[]</text>
-  <text x="124" y="402" fill="#f4edff" font-size="17" font-family="Consolas, monospace">answer_vocabulary_items[]</text>
-  <text x="124" y="432" fill="#f4edff" font-size="17" font-family="Consolas, monospace">topic / difficulty_level / confidence</text>
+  <rect x="60" y="140" width="600" height="360" rx="24" fill="url(#card)" stroke="#d5b2ff" stroke-opacity="0.36" filter="url(#shadow)"/>
+  <text x="90" y="184" fill="#f5d9ff" font-size="26" font-family="Segoe UI, Arial, sans-serif" font-weight="700">vw_llm_training</text>
+  <text x="90" y="222" fill="#f4edff" font-size="17" font-family="Consolas, monospace">PK training_id</text>
+  <text x="90" y="252" fill="#f4edff" font-size="17" font-family="Consolas, monospace">FK exam_id / question_id</text>
+  <text x="90" y="282" fill="#f4edff" font-size="17" font-family="Consolas, monospace">messages: Array&lt;Struct{role, content}&gt;</text>
+  <text x="90" y="312" fill="#f4edff" font-size="17" font-family="Consolas, monospace">topik_level / topic</text>
+  <text x="90" y="342" fill="#f4edff" font-size="17" font-family="Consolas, monospace">difficulty_level / question_type</text>
+  <text x="90" y="372" fill="#f4edff" font-size="17" font-family="Consolas, monospace">confidence</text>
+  <text x="90" y="420" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Uma linha por questao completa no formato ChatML</text>
+  <text x="90" y="444" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Pronto para Dataset.from_spark()</text>
 
-  <rect x="730" y="190" width="420" height="240" rx="24" fill="url(#card)" stroke="#d5b2ff" stroke-opacity="0.36" filter="url(#shadow)"/>
-  <text x="762" y="234" fill="#f5d9ff" font-size="28" font-family="Segoe UI, Arial, sans-serif" font-weight="700">GoldExamStats</text>
-  <text x="762" y="272" fill="#f4edff" font-size="17" font-family="Consolas, monospace">PK stats_id / FK exam_id</text>
-  <text x="762" y="302" fill="#f4edff" font-size="17" font-family="Consolas, monospace">total_questions / total_answers</text>
-  <text x="762" y="332" fill="#f4edff" font-size="17" font-family="Consolas, monospace">avg_word_count_question</text>
-  <text x="762" y="362" fill="#f4edff" font-size="17" font-family="Consolas, monospace">avg_word_count_answer</text>
-  <text x="762" y="392" fill="#f4edff" font-size="17" font-family="Consolas, monospace">distribution_by_difficulty / type</text>
+  <rect x="720" y="160" width="360" height="300" rx="24" fill="url(#card)" stroke="#d5b2ff" stroke-opacity="0.36" filter="url(#shadow)"/>
+  <text x="750" y="204" fill="#f5d9ff" font-size="26" font-family="Segoe UI, Arial, sans-serif" font-weight="700">mart_exam_stats</text>
+  <text x="750" y="242" fill="#f4edff" font-size="17" font-family="Consolas, monospace">PK stats_id / FK exam_id</text>
+  <text x="750" y="272" fill="#f4edff" font-size="17" font-family="Consolas, monospace">total_questions</text>
+  <text x="750" y="302" fill="#f4edff" font-size="17" font-family="Consolas, monospace">total_answers</text>
+  <text x="750" y="332" fill="#f4edff" font-size="17" font-family="Consolas, monospace">avg_word_count_question</text>
+  <text x="750" y="362" fill="#f4edff" font-size="17" font-family="Consolas, monospace">avg_word_count_answer</text>
+  <text x="750" y="392" fill="#f4edff" font-size="17" font-family="Consolas, monospace">distribution_by_difficulty</text>
+  <text x="750" y="422" fill="#f4edff" font-size="17" font-family="Consolas, monospace">distribution_by_type / last_updated</text>
 
-  <path d="M590 330 C640 330, 670 330, 730 330" stroke="#bb86fc" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
-  <text x="624" y="302" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">agregacoes</text>
+  <path d="M660 320 C690 320, 700 320, 720 320" stroke="#bb86fc" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <text x="665" y="300" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">agregacoes</text>
 
-  <text x="360" y="530" fill="#e0c3ff" font-size="18" font-family="Segoe UI, Arial, sans-serif">A Gold reorganiza a Silver em produtos de dados</text>
-  <text x="360" y="558" fill="#e0c3ff" font-size="18" font-family="Segoe UI, Arial, sans-serif">para treino, analise e monitoramento.</text>
+  <text x="60" y="620" fill="#e0c3ff" font-size="18" font-family="Segoe UI, Arial, sans-serif">A Gold reorganiza a Silver em produtos de dados prontos:</text>
+  <text x="60" y="648" fill="#e0c3ff" font-size="18" font-family="Segoe UI, Arial, sans-serif">exemplos de treino no formato ChatML e metricas agregadas por exame.</text>
 </svg>

@@ -39,14 +39,15 @@
   <text x="406" y="291" fill="#f4edff" font-size="16" font-family="Consolas, monospace">size_kb / page_count</text>
   <text x="406" y="319" fill="#f4edff" font-size="16" font-family="Consolas, monospace">source_pdf_path / source_url</text>
 
-  <rect x="700" y="140" width="320" height="260" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <rect x="700" y="140" width="320" height="280" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
   <text x="726" y="180" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimQuestion</text>
   <text x="726" y="215" fill="#f4edff" font-size="16" font-family="Consolas, monospace">PK question_id</text>
   <text x="726" y="243" fill="#f4edff" font-size="16" font-family="Consolas, monospace">FK exam_id</text>
   <text x="726" y="271" fill="#f4edff" font-size="16" font-family="Consolas, monospace">page_number / question_type</text>
   <text x="726" y="299" fill="#f4edff" font-size="16" font-family="Consolas, monospace">raw_question_text</text>
-  <text x="726" y="327" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_vocabulary_items[]</text>
-  <text x="726" y="355" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_grammar_patterns[]</text>
+  <text x="726" y="327" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_stimulus</text>
+  <text x="726" y="355" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_vocabulary_items[]</text>
+  <text x="726" y="383" fill="#f4edff" font-size="16" font-family="Consolas, monospace">question_grammar_patterns[]</text>
 
   <rect x="1060" y="160" width="280" height="220" rx="22" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
   <text x="1086" y="200" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">DimAnswer</text>

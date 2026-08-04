@@ -29,14 +29,15 @@
   <text x="100" y="334" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Etapa anterior a Bronze</text>
   <text x="100" y="362" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">entrada do `src/extract.py`</text>
 
-  <rect x="490" y="145" width="360" height="280" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
+  <rect x="490" y="145" width="360" height="310" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
   <text x="520" y="190" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Bronze Parquet</text>
   <text x="520" y="225" fill="#f4edff" font-size="17" font-family="Consolas, monospace">exam_id / exam_folder / exam_edition</text>
   <text x="520" y="255" fill="#f4edff" font-size="17" font-family="Consolas, monospace">filename / label / source_pdf_path</text>
-  <text x="520" y="285" fill="#f4edff" font-size="17" font-family="Consolas, monospace">page_count / page_number</text>
-  <text x="520" y="315" fill="#f4edff" font-size="17" font-family="Consolas, monospace">word_count / char_count</text>
-  <text x="520" y="345" fill="#f4edff" font-size="17" font-family="Consolas, monospace">raw_text</text>
-  <text x="520" y="385" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Uma linha por pagina processada</text>
+  <text x="520" y="285" fill="#f4edff" font-size="17" font-family="Consolas, monospace">level / section / topik_format</text>
+  <text x="520" y="315" fill="#f4edff" font-size="17" font-family="Consolas, monospace">page_count / page_number</text>
+  <text x="520" y="345" fill="#f4edff" font-size="17" font-family="Consolas, monospace">word_count / char_count</text>
+  <text x="520" y="375" fill="#f4edff" font-size="17" font-family="Consolas, monospace">raw_text</text>
+  <text x="520" y="415" fill="#cdbcf3" font-size="16" font-family="Segoe UI, Arial, sans-serif">Uma linha por pagina processada</text>
 
   <rect x="930" y="160" width="300" height="220" rx="24" fill="url(#card)" stroke="#b68cff" stroke-opacity="0.34" filter="url(#shadow)"/>
   <text x="960" y="205" fill="#e0c3ff" font-size="24" font-family="Segoe UI, Arial, sans-serif" font-weight="700">Uso na Silver</text>

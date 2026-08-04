@@ -3,6 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import sys
+from pathlib import Path
+
+
+# Adiciona `src/` ao path para permitir imports absolutos quando o script é
+# executado diretamente via `python src/cli/run_pipeline.py <layer>`.
+_SRC_ROOT = Path(__file__).resolve().parent.parent
+if str(_SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SRC_ROOT))
 
 
 def main() -> None:

@@ -84,6 +84,7 @@ A documentação da modelagem dimensional é servida em `http://127.0.0.1:8000`.
 ├── data/                      # Dados baixados e processados (não versionados)
 │   ├── bronze/
 │   ├── silver/
+|   ├── gold/
 │   └── topik_papers/
 ├── docs/                      # Documentação da modelagem dimensional
 ├── notebooks/                 # Notebooks de exploração
