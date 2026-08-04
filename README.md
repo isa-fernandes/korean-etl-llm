@@ -122,3 +122,5 @@ A documentação da modelagem dimensional é servida em `http://127.0.0.1:8000`.
 Este repositório é distribuído sob a licença MIT. Consulte [LICENSE](LICENSE) para mais detalhes.
 
 O código é aberto para fins de aprendizado. Os dados das provas pertencem aos respectivos detentores dos direitos autorais.
+
+![Visitor's badge](https://visitor-badge.laobi.icu/badge?page_id=isa-fernandes.korean-etl-llm)
