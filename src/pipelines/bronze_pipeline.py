@@ -4,48 +4,37 @@ from __future__ import annotations
 
 import json
 import os
-import tempfile
 import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from pdf2image import convert_from_path
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from schemas.bronze.pages_raw_schema import build_pages_raw_schema
-from utils.got_model import get_got_model
+from tools.llamaparse import parse_pdf_with_llamaparse
 from utils.hadoop_config import configure_windows_hadoop
 from utils.parquet_io import write_parquet_data
 from utils.spark_utils import initialize_spark
 from utils.text_utils import extract_exam_edition
-
-# Modelo GOT-OCR 2.0 carregado uma vez e reusado para todos os PDFs
-_GOT_MODEL = None
-_GOT_TOKENIZER = None
 
 SOURCE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "topik_papers")
 BRONZE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "bronze")
 
 
 def extract_pdf_data(filepath: str) -> dict[str, Any]:
-    """Extrai texto de cada página via GOT-OCR 2.0.
+    """Extrai texto de cada página via LlamaParse (LlamaCloud).
 
     Returns:
         Dict com ``page_count`` e ``pages`` (lista de strings, uma por página).
     """
     try:
-        global _GOT_MODEL, _GOT_TOKENIZER
-        _GOT_MODEL, _GOT_TOKENIZER = get_got_model(_GOT_MODEL, _GOT_TOKENIZER)
-        images = convert_from_path(filepath, dpi=150)
-        pages: list[str] = []
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            for i, img in enumerate(images):
-                tmp_path = os.path.join(tmp_dir, f"page_{i}.png")
-                img.save(tmp_path)
-                text = _GOT_MODEL.chat(_GOT_TOKENIZER, tmp_path, ocr_type="ocr")
-                pages.append(text or "")
-        return {"page_count": len(images), "pages": pages}
+        pages_by_number = parse_pdf_with_llamaparse(filepath)
+        if not pages_by_number:
+            return {"page_count": None, "pages": []}
+        page_count = max(pages_by_number)
+        pages = [pages_by_number.get(i, "") for i in range(1, page_count + 1)]
+        return {"page_count": page_count, "pages": pages}
     except Exception as exc:
         print(f"  [ERRO] {os.path.basename(filepath)}: {exc}")
         return {"page_count": None, "pages": []}

@@ -12,7 +12,7 @@ def get_got_model(GOT_MODEL, GOT_TOKENIZER):
             "[INFO] Carregando GOT-OCR 2.0 (primeira execucao faz download ~1.5GB)..."
         )
         GOT_TOKENIZER = AutoTokenizer.from_pretrained(
-            "stepfun-ai/GOT-OCR2_0", trust_remote_code=True, resume_download=None
+            "stepfun-ai/GOT-OCR2_0", trust_remote_code=True
         )
         GOT_MODEL = AutoModel.from_pretrained(
             "stepfun-ai/GOT-OCR2_0",
@@ -22,6 +22,5 @@ def get_got_model(GOT_MODEL, GOT_TOKENIZER):
             use_safetensors=True,
             torch_dtype=torch.bfloat16,
             pad_token_id=GOT_TOKENIZER.eos_token_id,
-            resume_download=None,
         ).eval()
     return GOT_MODEL, GOT_TOKENIZER
