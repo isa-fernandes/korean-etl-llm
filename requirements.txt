@@ -6,7 +6,11 @@ beautifulsoup4==4.14.3
 pdfplumber==0.11.9
 
 # --- OCR (Korean) ---
-# GOT-OCR 2.0 (stepfun-ai/GOT-OCR2_0): VLM de 580M params, state-of-the-art para documentos.
+# LlamaParse (LlamaCloud): parsing agentico via VLM hospedado, usado no pipeline Bronze.
+#   Requer LLAMA_PARSE (chave de API) definido em .env.
+llama_cloud==2.13.0
+python-dotenv==1.2.2
+# GOT-OCR 2.0 (stepfun-ai/GOT-OCR2_0): usado apenas nos notebooks de teste (notebooks/test_got_ocr*.ipynb).
 #   Modelo baixado automaticamente do HuggingFace (~1.5GB) na primeira execucao.
 #   Requer GPU CUDA (RTX 3050 6GB e suficiente).
 # Requer Poppler (para pdf2image no Windows):

@@ -123,12 +123,29 @@ prompt_template_str = """
 You are a Korean language expert and TOPIK exam analyst.
 
 Your task is to extract structured information from a TOPIK exam text.
-The input contains multiple questions. Each question has a problem statement followed by 4 numbered answer choices (1. 2. 3. 4.). 
-Sometimes, a single text or stimulus may apply to two consecutive questions. Furthermore, the input text comes from an OCR, which may contain spelling mistakes. If you are certain that it is a spelling mistake, correct it.
+The input normally arrives as semi-structured Markdown, where each question is delimited by a
+"## Question <N>" heading and contains up to three sub-sections:
+- "### Question Stimulus": the general instruction/prompt for the question (may be identical across a
+  consecutive range of questions, e.g. [9~12], since they share one instruction).
+- "### Reference Image" or "### Reference Text": the passage, notice, poster, or table/graph data the
+  question is based on.
+- "### Answers": the 4 answer choices, labeled either with arabic numerals (1. 2. 3. 4.) or circled
+  numerals (①②③④).
+Occasionally the input may instead arrive as continuous text without any Markdown headers; the same
+question/stimulus/answers structure still applies in that case, just without explicit section markers.
+The input text may still contain OCR spelling mistakes; if you are certain that it is a spelling mistake, correct it.
 
 Rules:
-- Extract EVERY numbered answer choice as a separate AnswerObject with its full text.
-- For question_type: use "grammar" if the options contain different grammar patterns, "vocabulary" if asking about word meaning or options contain different vocabulary to be used to complete the sentence, "reading comprehension" if asking about a passage, "image dependent" if they refer to an image.
+- Treat each "## Question <N>" block as a separate question. Consecutive blocks may repeat the exact same
+  "### Question Stimulus" text because they share one instruction across a range — still extract each block
+  as its own independent QuestionObject.
+- Map the "### Question Stimulus" section content to question_stimulus.
+- Map the "### Reference Image" / "### Reference Text" section content to question_text. Transcribe it into
+  clear, coherent Korean prose that preserves every fact, label, and number, but strip Markdown/HTML syntax
+  (e.g. "#", "*", "**", table tags) from the extracted text. If the section contains a table or flattened
+  chart data, restate it as a plain-language comparison sentence (e.g. "가격 48%, 여행 상품의 다양성 25%...").
+- Extract EVERY numbered or circled answer choice as a separate AnswerObject with its full text (excluding the numeral/circle marker itself).
+- For question_type: use "grammar" if the options contain different grammar patterns, "vocabulary" if asking about word meaning or options contain different vocabulary to be used to complete the sentence, "reading comprehension" if asking about a passage, "image dependent" if they refer to an image, poster, table, or graph.
 - For difficulty_level: "easy" for basic sentences, "medium" for intermediate grammar/vocab, "hard" for complex structures.
 - For topic: infer a short thematic label from the question content (e.g., "계절 변화", "건강", "광고").
 - For question_vocabulary_items: list important nouns/verbs/adjectives from the question statement only (not from answers).
@@ -144,12 +161,23 @@ Output format:
 <examples>
 <example_1>
 <input>
+## Question 1
+### Reference Text
+
 가을이 되면서 나뭇잎 색이 점점 붉게 (        )
+### Answers
+
 1. 변해 간다
 2. 변할 뻔했다
 3. 변한 척했다
 4. 변하면 된다
+
+## Question 2
+### Reference Text
+
 달리기, 지금 바로 시작하세요. 활기찬 내일이 기다립니다.
+### Answers
+
 1. 전기 절약
 2. 건강 관리
 3. 생활 예절
@@ -198,7 +226,39 @@ Output format:
 
 <example_2>
 <input>
-※\n【1～2】\n（\n）에 들어갈 말로 가장 알맞은 것을 고르십시오.\n（각 2점）\n1. 이 동내로 이사를（\n）일 년이 했다.\n1. 은 지\n2. 올 때\n3. 오거나\n4. 오\n2. 가음이 되면서 나 외이 점점 봬게（\n）.\n1. 변해 간다\n2. 변할 변했다\n3. 변한 적했다\n4. 변하면 된다\n
+## Question 1
+### Question Stimulus
+
+※
+【1～2】
+（        ）에 들어갈 말로 가장 알맞은 것을 고르십시오.
+（각 2점）
+### Reference Text
+
+이 동내로 이사를（        ）일 년이 했다.
+### Answers
+
+1. 은 지
+2. 올 때
+3. 오거나
+4. 오
+
+## Question 2
+### Question Stimulus
+
+※
+【1～2】
+（        ）에 들어갈 말로 가장 알맞은 것을 고르십시오.
+（각 2점）
+### Reference Text
+
+가음이 되면서 나 외이 점점 봬게（        ）.
+### Answers
+
+1. 변해 간다
+2. 변할 변했다
+3. 변한 적했다
+4. 변하면 된다
 </input>
 
 <output>
@@ -243,7 +303,29 @@ Output format:
 
 <example_3>
 <input>
-※\n[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)\n9.\n1. 봉사 활동은 두 달 동안 하게 된다.\n2. 아이들에게 책을 읽어 줄 봉사자를 찾고 있다.\n3. 봉사자 신청은 도서관에 직접 가서 해야 한다.\n4. 학생이 아닌 사람들도 이 봉사에 잠여할 수 있다.\n10.\n1. 회사의 규모가 중요한다고 응답한 비율이 가장 낮다.\n2. 가격을 중요하게 생각하는 사람이 전체의 받을 달는다.\n3. 이용 후기가 여행 상품의 다양한보다 중요하다는 응답이 두 때 이상 달다.\n4. 여행 상품의 다양한보다 회사의 규모를 중요하게 생각하는 사람이 더 적다.
+## Question 9
+### Question Stimulus
+
+※
+[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)
+### Answers
+
+1. 봉사 활동은 두 달 동안 하게 된다.
+2. 아이들에게 책을 읽어 줄 봉사자를 찾고 있다.
+3. 봉사자 신청은 도서관에 직접 가서 해야 한다.
+4. 학생이 아닌 사람들도 이 봉사에 잠여할 수 있다.
+
+## Question 10
+### Question Stimulus
+
+※
+[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)
+### Answers
+
+1. 회사의 규모가 중요한다고 응답한 비율이 가장 낮다.
+2. 가격을 중요하게 생각하는 사람이 전체의 받을 달는다.
+3. 이용 후기가 여행 상품의 다양한보다 중요하다는 응답이 두 때 이상 달다.
+4. 여행 상품의 다양한보다 회사의 규모를 중요하게 생각하는 사람이 더 적다.
 </input>
 
 <output>
@@ -288,7 +370,212 @@ Output format:
 
 <example_4>
 <input>
-※\n[9～12] 다음\n를\n또는\n그레프의\n내용과\n같은\n것을\n고르십시오.\n(각 2점)\n11.\n지난달\n문을\n연\n우표\n박물관이\n시민들에게\n사령을\n받고\n있다.\n박물관\n내\n역사실에서는\n우표의\n역사를\n한논에\n불\n수\n있다.\n또\n어린이\n체험실에서는\n향기\n나는\n우표의\n향을\n말거나\n나무\n우표\n등을\n만저\n불\n수\n있다.\n자신의\n사진이\n들어간\n우표도\n직접\n만들\n수\n있다.\n편지를\n써\n생으면\n일\n년\n위에\n받아\n불\n수\n있는\n박물관의\n‘_title\n우체통’도\n인기를\n disin\n다.\n1.\n이\n박물관은\n일\n년\n전부터\n운영을\n시작했다.\n2.\n이\n박물관에서는\n직접\n우표를\n만들어\n불\n수\n있다.\n3.\n이\n박물관의\n체험실에\n있는\n우표는\n만질\n수\n없다.\n4.\n이\n박물관의\n린\n우체통으로\n편지를\n보내지\n 못한다.\n12.\n후일에\n산을\n오르면\n경찰이\n등산각을\n구조했다.\n지난\n1일\n검민수\n경위는\n인주산\n정상에서\n한\n여성이\n쓰려져\n있는\n것을\n발경했다.\n김\n경위는\n바로\n여성의\n체온이\n필어지지\n일게\n검egen을\n냯어서\n어\n주고\n119에\n신고했다.\n이후\n김\n경위는\n구조대\n치량이\n을\n수\n있는\n산\n중력\n대파소까지\n여성을\n업고\n위어\n내려었다.\n병원으로\n이충된\n여성은\n치료를\n받고\n건강을\n되\n1.\n한\n등산각이\n산\n정상에\n쓰려져\n있었다.\n2.\n김\n경위는\n대파소까지\n차량으로\n이동했다.\n3.\n구조대가\n등산작을\n업고\n병원으로\n위어었다.\n4.\n김\n경위는\n등산각의\n신고를\n받고\n산에\n을라
+## Question 11
+### Question Stimulus
+
+※
+[9～12] 다음
+를
+또는
+그레프의
+내용과
+같은
+것을
+고르십시오.
+(각 2점)
+### Reference Text
+
+지난달
+문을
+연
+우표
+박물관이
+시민들에게
+사령을
+받고
+있다.
+박물관
+내
+역사실에서는
+우표의
+역사를
+한논에
+불
+수
+있다.
+또
+어린이
+체험실에서는
+향기
+나는
+우표의
+향을
+말거나
+나무
+우표
+등을
+만저
+불
+수
+있다.
+자신의
+사진이
+들어간
+우표도
+직접
+만들
+수
+있다.
+편지를
+써
+생으면
+일
+년
+위에
+받아
+불
+수
+있는
+박물관의
+‘_title
+우체통’도
+인기를
+ disin
+다.
+### Answers
+
+1.
+이
+박물관은
+일
+년
+전부터
+운영을
+시작했다.
+2.
+이
+박물관에서는
+직접
+우표를
+만들어
+불
+수
+있다.
+3.
+이
+박물관의
+체험실에
+있는
+우표는
+만질
+수
+없다.
+4.
+이
+박물관의
+린
+우체통으로
+편지를
+보내지
+ 못한다.
+
+## Question 12
+### Question Stimulus
+
+※
+[9～12] 다음
+를
+또는
+그레프의
+내용과
+같은
+것을
+고르십시오.
+(각 2점)
+### Reference Text
+
+후일에
+산을
+오르면
+경찰이
+등산각을
+구조했다.
+지난
+1일
+검민수
+경위는
+인주산
+정상에서
+한
+여성이
+쓰려져
+있는
+것을
+발경했다.
+김
+경위는
+바로
+여성의
+체온이
+필어지지
+일게
+검egen을
+냯어서
+어
+주고
+119에
+신고했다.
+이후
+김
+경위는
+구조대
+치량이
+을
+수
+있는
+산
+중력
+대파소까지
+여성을
+업고
+위어
+내려었다.
+병원으로
+이충된
+여성은
+치료를
+받고
+건강을
+되
+### Answers
+
+1.
+한
+등산각이
+산
+정상에
+쓰려져
+있었다.
+2.
+김
+경위는
+대파소까지
+차량으로
+이동했다.
+3.
+구조대가
+등산작을
+업고
+병원으로
+위어었다.
+4.
+김
+경위는
+등산각의
+신고를
+받고
+산에
+을라
 </input>
 
 <output>
@@ -333,7 +620,59 @@ Output format:
 
 <example_5>
 <input>
-※\n【13~15】다음을 순서에 맞게 배열한 것을 고르십시오. (각 2점)\n(가) 그래서 꺑질제 먹기도 편하고 맀락하지 않아서 식감도 좋다.\n(나) 신비 복승하는 2017년에 한국에 처음 소개된 여름 과일이다.\n(다) 다른 복승여에 비해 이른 시기에 먹을 수 있다는 것도 장점이다.\n(라) Cyc이 없은 복승여와 속이 부드러운 복승여의 장점을 결합해 만들었다.\n(나) (- (라) - (가) - (다)\n(2) (나) - (가) - (다) - (라)\n(3) (라) - (나) - (다) - (가)\n(4) (라) - (다) - (가) - (나)\n(가) 아이가 감기에 걸려 탈재 큰 소리로 올었다.\n(나) 아주머니는 아이가 많이 아나며 오히려 격정해 주었다.\n(다) 아침에 아이와 병원에 가려고 집을 나서다 열집 아주머니를 만났다.\n(라) 나는 우는 아이를 달래면서도 올음소리에 이ße들이 캠퀬와 격정했다.\n(가) - (나) - (라) - (다)\n(2) (가) - (라) - (다) - (나)\n(3) (- (가) - (다) - (라)\n(4) (- (나) - (라) - (가)\n(가) 죄근 온라인 가구 구매가 늘면서 반품 사례가 많아지고 있다.\n(나) 그런데 비 뉘용으로 인해 피해를 보는 소비자가 늘고 있다.\n(다) 막라서 소비자는 구매 전에 반품 비용과 조건을 잘 확인해야 한다.\n(라) 입체가로 온건을 내세워 반품을 거절하는 경우까지 발생한다.\n(가) - (나) - (라) - (다)\n(2) (- (라) - (다) - (나)\n(3) (라) - (가) - (나) - (다)\n(4) (라) - (다) - (가) - (나)
+## Question 13
+### Question Stimulus
+
+※
+【13~15】다음을 순서에 맞게 배열한 것을 고르십시오. (각 2점)
+### Reference Text
+
+(가) 그래서 꺑질제 먹기도 편하고 맀락하지 않아서 식감도 좋다.
+(나) 신비 복승하는 2017년에 한국에 처음 소개된 여름 과일이다.
+(다) 다른 복승여에 비해 이른 시기에 먹을 수 있다는 것도 장점이다.
+(라) Cyc이 없은 복승여와 속이 부드러운 복승여의 장점을 결합해 만들었다.
+### Answers
+
+(나) (- (라) - (가) - (다)
+(2) (나) - (가) - (다) - (라)
+(3) (라) - (나) - (다) - (가)
+(4) (라) - (다) - (가) - (나)
+
+## Question 14
+### Question Stimulus
+
+※
+【13~15】다음을 순서에 맞게 배열한 것을 고르십시오. (각 2점)
+### Reference Text
+
+(가) 아이가 감기에 걸려 탈재 큰 소리로 올었다.
+(나) 아주머니는 아이가 많이 아나며 오히려 격정해 주었다.
+(다) 아침에 아이와 병원에 가려고 집을 나서다 열집 아주머니를 만났다.
+(라) 나는 우는 아이를 달래면서도 올음소리에 이ße들이 캠퀬와 격정했다.
+### Answers
+
+(가) - (나) - (라) - (다)
+(2) (가) - (라) - (다) - (나)
+(3) (- (가) - (다) - (라)
+(4) (- (나) - (라) - (가)
+
+## Question 15
+### Question Stimulus
+
+※
+【13~15】다음을 순서에 맞게 배열한 것을 고르십시오. (각 2점)
+### Reference Text
+
+(가) 죄근 온라인 가구 구매가 늘면서 반품 사례가 많아지고 있다.
+(나) 그런데 비 뉘용으로 인해 피해를 보는 소비자가 늘고 있다.
+(다) 막라서 소비자는 구매 전에 반품 비용과 조건을 잘 확인해야 한다.
+(라) 입체가로 온건을 내세워 반품을 거절하는 경우까지 발생한다.
+### Answers
+
+(가) - (나) - (라) - (다)
+(2) (- (라) - (다) - (나)
+(3) (라) - (가) - (나) - (다)
+(4) (라) - (다) - (가) - (나)
 </input>
 
 <output>
@@ -390,7 +729,93 @@ Output format:
   ]
 }}
 </output>
-<example_5>
+</example_5>
+
+<example_6>
+<input>
+## Question 9
+### Question Stimulus
+
+[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)
+### Reference Image
+
+**그림책 읽어 주는 자원봉사자 모집**
+
+"어린이들에게 꿈과 희망을 선물하세요."
+
+* 자격: 고등학생 또는 대학생(※ 한국어를 잘하는 외국인 학생도 가능)
+* 모집 기간: 11월 10일(월) ~ 11월 21일(금)
+* 신청 방법: 인주어린이도서관 홈페이지(www.injulibrary.or.kr)
+* 활동 기간: 2025년 12월 1일(월) ~ 2026년 2월 28일(토)
+### Answers
+
+1. 봉사 활동은 두 달 동안 하게 된다.
+2. 아이들에게 책을 읽어 줄 봉사자를 찾고 있다.
+3. 봉사자 신청은 도서관에 직접 가서 해야 한다.
+4. 학생이 아닌 사람들도 이 봉사에 참여할 수 있다.
+
+## Question 10
+### Question Stimulus
+
+[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)
+### Reference Image
+
+여행사를 선택할 때 중요하게 생각하는 것
+
+항목 비율(%)
+가격 48
+여행 상품의 다양성 25
+회사의 규모 16
+이용 후기 9
+기타 2
+### Answers
+
+1. 회사의 규모가 중요하다고 응답한 비율이 가장 낮다.
+2. 가격을 중요하게 생각하는 사람이 전체의 반을 넘는다.
+3. 이용 후기가 여행 상품의 다양성보다 중요하다는 응답이 두 배 이상 많다.
+4. 여행 상품의 다양성보다 회사의 규모를 중요하게 생각하는 사람이 더 적다.
+</input>
+
+<output>
+{{
+  "questions": [
+    {{
+      "question_text": "그림책 읽어 주는 자원봉사자 모집. 어린이들에게 꿈과 희망을 선물하세요. 자격: 고등학생 또는 대학생(한국어를 잘하는 외국인 학생도 가능). 모집 기간: 11월 10일(월)부터 11월 21일(금)까지. 신청 방법: 인주어린이도서관 홈페이지(www.injulibrary.or.kr). 활동 기간: 2025년 12월 1일(월)부터 2026년 2월 28일(토)까지.",
+      "question_stimulus": "[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)",
+      "answer_options": [
+        {{"answer_text": "봉사 활동은 두 달 동안 하게 된다.", "answer_vocabulary_items": ["봉사 활동", "두 달"], "answer_grammar_patterns": ["-게 되다"]}},
+        {{"answer_text": "아이들에게 책을 읽어 줄 봉사자를 찾고 있다.", "answer_vocabulary_items": ["아이들", "봉사자"], "answer_grammar_patterns": ["-아/어 주다", "-고 있다"]}},
+        {{"answer_text": "봉사자 신청은 도서관에 직접 가서 해야 한다.", "answer_vocabulary_items": ["봉사자", "신청", "도서관"], "answer_grammar_patterns": ["-아/어서", "-아/어야 하다"]}},
+        {{"answer_text": "학생이 아닌 사람들도 이 봉사에 참여할 수 있다.", "answer_vocabulary_items": ["학생", "봉사"], "answer_grammar_patterns": ["-이/가 아니다", "-(으)ㄹ 수 있다"]}}
+      ],
+      "question_type": "image dependent",
+      "question_vocabulary_items": ["자원봉사자", "모집", "신청 방법", "활동 기간"],
+      "question_grammar_patterns": [],
+      "topic": "봉사 활동",
+      "difficulty_level": "medium",
+      "confidence": 0.9
+    }},
+    {{
+      "question_text": "여행사를 선택할 때 중요하게 생각하는 것에 대한 설문 결과이다. 가격 48%, 여행 상품의 다양성 25%, 회사의 규모 16%, 이용 후기 9%, 기타 2%이다.",
+      "question_stimulus": "[9~12] 다음 글 또는 그래프의 내용과 같은 것을 고르십시오. (각 2점)",
+      "answer_options": [
+        {{"answer_text": "회사의 규모가 중요하다고 응답한 비율이 가장 낮다.", "answer_vocabulary_items": ["회사", "규모", "비율"], "answer_grammar_patterns": ["-다고"]}},
+        {{"answer_text": "가격을 중요하게 생각하는 사람이 전체의 반을 넘는다.", "answer_vocabulary_items": ["가격", "전체"], "answer_grammar_patterns": ["-게", "-는"]}},
+        {{"answer_text": "이용 후기가 여행 상품의 다양성보다 중요하다는 응답이 두 배 이상 많다.", "answer_vocabulary_items": ["이용 후기", "여행 상품"], "answer_grammar_patterns": ["-보다", "-다는"]}},
+        {{"answer_text": "여행 상품의 다양성보다 회사의 규모를 중요하게 생각하는 사람이 더 적다.", "answer_vocabulary_items": ["여행 상품", "회사", "규모"], "answer_grammar_patterns": ["-보다", "-게"]}}
+      ],
+      "question_type": "image dependent",
+      "question_vocabulary_items": ["여행사", "설문", "비율"],
+      "question_grammar_patterns": [],
+      "topic": "여행 상품",
+      "difficulty_level": "medium",
+      "confidence": 0.9
+    }}
+  ]
+}}
+</output>
+</example_6>
+</examples>
 
 Now extract from the following text:
 {input}
